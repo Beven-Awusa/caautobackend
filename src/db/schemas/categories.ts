@@ -6,8 +6,10 @@ import {
   boolean,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+import { products } from "./products";
 
 export const categories = pgTable("categories", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -38,3 +40,7 @@ export const updateCategorySchema = insertCategorySchema.partial().omit({
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 export type UpdateCategory = z.infer<typeof updateCategorySchema>;
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));

@@ -1,29 +1,37 @@
-import { pgTable, uuid, decimal, integer, varchar, text, timestamp, pgEnum, json } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  decimal,
+  integer,
+  varchar,
+  text,
+  timestamp,
+  pgEnum,
+  json,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { users } from "./users";
 import { products } from "./products";
+import { orderItems } from "./order-items";
 
-// Order status enum
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
-  "confirmed", 
+  "confirmed",
   "processing",
   "shipped",
   "delivered",
-  "cancelled"
+  "cancelled",
 ]);
 
-// Payment status enum
 export const paymentStatusEnum = pgEnum("payment_status", [
   "pending",
   "paid",
   "failed",
-  "refunded"
+  "refunded",
 ]);
 
-// Address schema for JSON fields
 const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
   city: z.string().min(1, "City is required"),
@@ -32,15 +40,31 @@ const addressSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });
 
-// Orders table
 export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   status: orderStatusEnum("status").notNull().default("pending"),
-  paymentStatus: paymentStatusEnum("payment_status").notNull().default("pending"),
-  shippingAddress: json("shipping_address").$type<z.infer<typeof addressSchema>>().notNull(),
-  billingAddress: json("billing_address").$type<z.infer<typeof addressSchema>>(),
+  paymentStatus: paymentStatusEnum("payment_status")
+    .notNull()
+    .default("pending"),
+  shippingAmount: decimal("shipping_amount", {
+    precision: 10,
+    scale: 2,
+  }).default("0"),
+
+  discountAmount: decimal("discount_amount", {
+    precision: 10,
+    scale: 2,
+  }).default("0"),
+
+  shippingAddress: json("shipping_address")
+    .$type<z.infer<typeof addressSchema>>()
+    .notNull(),
+  billingAddress:
+    json("billing_address").$type<z.infer<typeof addressSchema>>(),
   notes: text("notes"),
   trackingNumber: varchar("tracking_number", { length: 100 }),
   shippedAt: timestamp("shipped_at"),
@@ -49,19 +73,6 @@ export const orders = pgTable("orders", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// Order items table
-export const orderItems = pgTable("order_items", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  orderId: uuid("order_id").notNull().references(() => orders.id, { onDelete: "cascade" }),
-  productId: uuid("product_id").notNull().references(() => products.id, { onDelete: "restrict" }),
-  quantity: integer("quantity").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Price at time of order
-  productName: varchar("product_name", { length: 255 }).notNull(), // Snapshot of product name
-  productImage: text("product_image"), // Snapshot of main product image
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-// Relations
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(users, {
     fields: [orders.userId],
@@ -81,20 +92,30 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   }),
 }));
 
-// Zod schemas for validation
 export const insertOrderSchema = createInsertSchema(orders, {
-  totalAmount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount format"),
-  status: z.enum(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]).default("pending"),
-  paymentStatus: z.enum(["pending", "paid", "failed", "refunded"]).default("pending"),
+  totalAmount: z.number().positive("Amount must be positive"),
+  status: z
+    .enum([
+      "pending",
+      "confirmed",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ])
+    .default("pending"),
+  paymentStatus: z
+    .enum(["pending", "paid", "failed", "refunded"])
+    .default("pending"),
   shippingAddress: addressSchema,
   billingAddress: addressSchema.optional(),
   notes: z.string().max(500, "Notes too long").optional(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems, {
+  productId: z.uuid("Invalid product ID"),
   quantity: z.number().int().min(1, "Quantity must be at least 1"),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
-  productName: z.string().min(1, "Product name is required"),
+  price: z.number().positive("Price must be positive"),
 });
 
 export const selectOrderSchema = createSelectSchema(orders);

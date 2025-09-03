@@ -13,7 +13,6 @@ import { z } from "zod";
 import { users } from "./users";
 import { products } from "./products";
 
-// Product reviews table
 export const reviews = pgTable(
   "reviews",
   {
@@ -24,20 +23,18 @@ export const reviews = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    rating: integer("rating").notNull(), // 1-5 stars
+    rating: integer("rating").notNull(),
     title: text("title"),
     comment: text("comment"),
-    isVerified: boolean("is_verified").notNull().default(false), // If user actually purchased the product
+    isVerified: boolean("is_verified").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
-    // Ensure user can only review a product once
     userProductUnique: unique().on(table.userId, table.productId),
   })
 );
 
-// Relations
 export const reviewsRelations = relations(reviews, ({ one }) => ({
   user: one(users, {
     fields: [reviews.userId],
@@ -49,7 +46,6 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
   }),
 }));
 
-// Zod schemas for validation
 export const insertReviewSchema = createInsertSchema(reviews, {
   rating: z
     .number()

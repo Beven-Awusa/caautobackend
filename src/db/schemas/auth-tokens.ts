@@ -11,7 +11,6 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { users } from "./users";
 
-// Token type enum
 export const tokenTypeEnum = pgEnum("token_type", [
   "refresh",
   "email_verification",
@@ -58,7 +57,6 @@ export const updateAuthTokenSchema = insertAuthTokenSchema.partial().omit({
   updatedAt: true,
 });
 
-// Type exports
 export type AuthToken = typeof authTokens.$inferSelect;
 export type NewAuthToken = typeof authTokens.$inferInsert;
 export type UpdateAuthToken = z.infer<typeof updateAuthTokenSchema>;
