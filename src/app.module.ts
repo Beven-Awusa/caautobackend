@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './core/auth/auth.module';
-import { UsersModule } from './core/users/users.module';
-import { DatabaseModule } from './core/database/database.module';
 import { ConfigModule } from '@nestjs/config';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -10,9 +8,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    AuthModule,
-    UsersModule,
-    DatabaseModule,
+    CoreModule,
   ],
 })
 export class AppModule {}

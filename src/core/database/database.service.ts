@@ -18,10 +18,12 @@ export class DatabaseService
       datasourceUrl: config.get('DATABASE_URL') as string,
     });
   }
-  onModuleInit() {
+  async onModuleInit() {
+    await this.$connect();
     this.logger.log('Connected to database');
   }
-  onModuleDestroy() {
+  async onModuleDestroy() {
+    await this.$disconnect();
     this.logger.log('Disconnected from database');
   }
 }

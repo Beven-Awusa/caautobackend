@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAAUTO</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            color: #1a73e8;
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #e8f0fe;
+            border-radius: 4px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .features-list {
+            background-color: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+                <% if (typeof logoUrl !== 'undefined' && logoUrl) { %>
+                    <img src="<%= logoUrl %>" alt="<%= companyName || 'CAAUTO' %>" style="max-width: 200px;" />
+                <% } %>
+                <% if (typeof headerTitle !== 'undefined' && headerTitle) { %>
+                    <h1><%= headerTitle %></h1>
+                <% } %>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">Dear <%= customerName || email %>,</p>
+            
+            <div class="welcome-message">
+                🚗 Welcome to CAAUTO - Your Trusted Auto Parts Marketplace!
+            </div>
+            
+            <p>Thank you for joining CAAUTO! We're thrilled to have you as part of our growing community of auto parts enthusiasts and professionals.</p>
+            
+            <div class="features-list">
+                <p><strong>With your CAAUTO account, you can:</strong></p>
+                <ul>
+                    <li>Access our extensive catalog of genuine auto parts</li>
+                    <li>Get competitive prices from verified suppliers</li>
+                    <li>Track your orders in real-time</li>
+                    <li>Receive expert support for part selection</li>
+                    <li>Enjoy secure payment options</li>
+                </ul>
+            </div>
+            
+            <p>Ready to find the perfect parts for your vehicle?</p>
+            <center>
+                <a href="<%= websiteUrl || 'https://caauto.com' %>" class="button">Start Shopping Now</a>
+            </center>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Thank you for choosing CAAUTO!</strong></p>
+            <p>Best regards,<br>
+            The CAAUTO Team</p>
+            
+            <div class="support-info">
+                <p>Need assistance? Our support team is here to help:</p>
+                <p><a href="mailto:<%= supportEmail || 'support@caauto.com' %>"><%= supportEmail || 'support@caauto.com' %></a></p>
+                <% if (typeof supportPhone !== 'undefined' && supportPhone) { %>
+                    <p>Phone: <%= supportPhone %></p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

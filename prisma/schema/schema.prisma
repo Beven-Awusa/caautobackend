@@ -117,23 +117,25 @@ enum ItemCondition {
 
 // Main Models
 model User {
-  id             BigInt    @id @default(autoincrement())
-  email          String    @unique @db.VarChar(255)
-  passwordHash   String    @map("password_hash") @db.VarChar(255)
-  firstName      String    @map("first_name") @db.VarChar(100)
-  lastName       String    @map("last_name") @db.VarChar(100)
-  phone          String?   @db.VarChar(20)
-  profilePicture String?   @map("profile_picture") @db.VarChar(500)
-  location       String?   @db.VarChar(255)
-  bio            String?   @db.Text
-  role           Role      @default(BUYER)
-  status         Status    @default(ACTIVE)
-  emailVerified  Boolean   @default(false) @map("email_verified")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  lastLogin      DateTime? @map("last_login")
+  id                 String    @id @default(cuid())
+  email              String    @unique @db.VarChar(255)
+  passwordHash       String    @map("password_hash") @db.VarChar(255)
+  firstName          String    @map("first_name") @db.VarChar(100)
+  lastName           String    @map("last_name") @db.VarChar(100)
+  phone              String?   @db.VarChar(20)
+  profilePicture     String?   @map("profile_picture") @db.VarChar(500)
+  location           String?   @db.VarChar(255)
+  bio                String?   @db.Text
+  role               Role      @default(BUYER)
+  status             Status    @default(ACTIVE)
+  emailVerified      Boolean   @default(false) @map("email_verified")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  lastLogin          DateTime? @map("last_login")
+  refreshToken       String?   @map("refresh_token") @db.VarChar(255)
+  refreshTokenExpiry DateTime? @map("refresh_token_expiry")
 
-  // Relations
+  googleId         String?            @map("google_id") @db.VarChar(255)
   socialLinks      UserSocialLink[]
   carListings      CarListing[]
   favorites        UserFavorite[]
@@ -152,6 +154,7 @@ model User {
   subscriptions    UserSubscription[]
   loanCalculations LoanCalculation[]
   accessories      Accessory[]
+  otp              Otp[]
 
   @@index([email])
   @@index([role])
@@ -159,9 +162,21 @@ model User {
   @@map("users")
 }
 
+model Otp {
+  id        String   @id @default(cuid())
+  token     String   @unique @db.VarChar(6)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+
+  @@index([expiresAt])
+  @@map("otps")
+}
+
 model UserSocialLink {
-  id        BigInt   @id @default(autoincrement())
-  userId    BigInt   @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
   platform  String   @db.VarChar(50)
   url       String   @db.VarChar(500)
   createdAt DateTime @default(now()) @map("created_at")
@@ -173,7 +188,7 @@ model UserSocialLink {
 }
 
 model CarMake {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @unique @db.VarChar(100)
   logo      String?  @db.VarChar(500)
   isActive  Boolean  @default(true) @map("is_active")
@@ -189,8 +204,8 @@ model CarMake {
 }
 
 model CarModel {
-  id        BigInt   @id @default(autoincrement())
-  makeId    BigInt   @map("make_id")
+  id        String   @id @default(cuid())
+  makeId    String   @map("make_id")
   name      String   @db.VarChar(100)
   yearStart Int?     @map("year_start")
   yearEnd   Int?     @map("year_end")
@@ -208,12 +223,12 @@ model CarModel {
 }
 
 model CarListing {
-  id             BigInt           @id @default(autoincrement())
-  userId         BigInt           @map("user_id")
+  id             String           @id @default(cuid())
+  userId         String           @map("user_id")
   title          String           @db.VarChar(255)
   description    String?          @db.Text
-  makeId         BigInt           @map("make_id")
-  modelId        BigInt           @map("model_id")
+  makeId         String           @map("make_id")
+  modelId        String           @map("model_id")
   year           Int
   condition      CarCondition
   price          Decimal          @db.Decimal(12, 2)
@@ -267,7 +282,7 @@ model CarListing {
 }
 
 model CarFeature {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @unique @db.VarChar(100)
   category  String   @db.VarChar(50)
   isActive  Boolean  @default(true) @map("is_active")
@@ -281,9 +296,9 @@ model CarFeature {
 }
 
 model CarListingFeature {
-  id        BigInt   @id @default(autoincrement())
-  listingId BigInt   @map("listing_id")
-  featureId BigInt   @map("feature_id")
+  id        String   @id @default(cuid())
+  listingId String   @map("listing_id")
+  featureId String   @map("feature_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   listing CarListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
@@ -296,9 +311,9 @@ model CarListingFeature {
 }
 
 model UserFavorite {
-  id        BigInt   @id @default(autoincrement())
-  userId    BigInt   @map("user_id")
-  listingId BigInt   @map("listing_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  listingId String   @map("listing_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -311,9 +326,9 @@ model UserFavorite {
 }
 
 model UserView {
-  id        BigInt   @id @default(autoincrement())
-  userId    BigInt?  @map("user_id")
-  listingId BigInt   @map("listing_id")
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  listingId String   @map("listing_id")
   ipAddress String?  @map("ip_address") @db.VarChar(45)
   userAgent String?  @map("user_agent") @db.Text
   viewedAt  DateTime @default(now()) @map("viewed_at")
@@ -328,10 +343,10 @@ model UserView {
 }
 
 model Message {
-  id          BigInt   @id @default(autoincrement())
-  senderId    BigInt   @map("sender_id")
-  recipientId BigInt   @map("recipient_id")
-  listingId   BigInt?  @map("listing_id")
+  id          String   @id @default(cuid())
+  senderId    String   @map("sender_id")
+  recipientId String   @map("recipient_id")
+  listingId   String?  @map("listing_id")
   subject     String?  @db.VarChar(255)
   message     String   @db.Text
   isRead      Boolean  @default(false) @map("is_read")
@@ -350,11 +365,11 @@ model Message {
 }
 
 model MessageThread {
-  id            BigInt    @id @default(autoincrement())
-  user1Id       BigInt    @map("user1_id")
-  user2Id       BigInt    @map("user2_id")
-  listingId     BigInt?   @map("listing_id")
-  lastMessageId BigInt?   @map("last_message_id")
+  id            String    @id @default(cuid())
+  user1Id       String    @map("user1_id")
+  user2Id       String    @map("user2_id")
+  listingId     String?   @map("listing_id")
+  lastMessageId String?   @map("last_message_id")
   lastMessageAt DateTime? @map("last_message_at")
   createdAt     DateTime  @default(now()) @map("created_at")
 
@@ -370,7 +385,7 @@ model MessageThread {
 }
 
 model BlogCategory {
-  id          BigInt   @id @default(autoincrement())
+  id          String   @id @default(cuid())
   name        String   @unique @db.VarChar(100)
   slug        String   @unique @db.VarChar(100)
   description String?  @db.Text
@@ -385,9 +400,9 @@ model BlogCategory {
 }
 
 model BlogPost {
-  id              BigInt     @id @default(autoincrement())
-  authorId        BigInt     @map("author_id")
-  categoryId      BigInt?    @map("category_id")
+  id              String     @id @default(cuid())
+  authorId        String     @map("author_id")
+  categoryId      String?    @map("category_id")
   title           String     @db.VarChar(255)
   slug            String     @unique @db.VarChar(255)
   excerpt         String?    @db.Text
@@ -416,7 +431,7 @@ model BlogPost {
 }
 
 model BlogTag {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @unique @db.VarChar(50)
   slug      String   @unique @db.VarChar(50)
   createdAt DateTime @default(now()) @map("created_at")
@@ -428,9 +443,9 @@ model BlogTag {
 }
 
 model BlogPostTag {
-  id        BigInt   @id @default(autoincrement())
-  postId    BigInt   @map("post_id")
-  tagId     BigInt   @map("tag_id")
+  id        String   @id @default(cuid())
+  postId    String   @map("post_id")
+  tagId     String   @map("tag_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -443,10 +458,10 @@ model BlogPostTag {
 }
 
 model BlogComment {
-  id         BigInt   @id @default(autoincrement())
-  postId     BigInt   @map("post_id")
-  userId     BigInt?  @map("user_id")
-  parentId   BigInt?  @map("parent_id")
+  id         String   @id @default(cuid())
+  postId     String   @map("post_id")
+  userId     String?  @map("user_id")
+  parentId   String?  @map("parent_id")
   name       String?  @db.VarChar(100)
   email      String?  @db.VarChar(255)
   content    String   @db.Text
@@ -466,7 +481,7 @@ model BlogComment {
 }
 
 model Product {
-  id               BigInt        @id @default(autoincrement())
+  id               String        @id @default(cuid())
   name             String        @db.VarChar(255)
   slug             String        @unique @db.VarChar(255)
   description      String?       @db.Text
@@ -497,10 +512,10 @@ model Product {
 }
 
 model ShoppingCart {
-  id        BigInt   @id @default(autoincrement())
-  userId    BigInt?  @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
   sessionId String?  @map("session_id") @db.VarChar(255)
-  productId BigInt   @map("product_id")
+  productId String   @map("product_id")
   quantity  Int      @default(1)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -515,8 +530,8 @@ model ShoppingCart {
 }
 
 model Order {
-  id              BigInt        @id @default(autoincrement())
-  userId          BigInt?       @map("user_id")
+  id              String        @id @default(cuid())
+  userId          String?       @map("user_id")
   orderNumber     String        @unique @map("order_number") @db.VarChar(50)
   status          OrderStatus   @default(PENDING)
   subtotal        Decimal       @db.Decimal(10, 2)
@@ -542,9 +557,9 @@ model Order {
 }
 
 model OrderItem {
-  id        BigInt   @id @default(autoincrement())
-  orderId   BigInt   @map("order_id")
-  productId BigInt   @map("product_id")
+  id        String   @id @default(cuid())
+  orderId   String   @map("order_id")
+  productId String   @map("product_id")
   quantity  Int
   price     Decimal  @db.Decimal(10, 2)
   total     Decimal  @db.Decimal(10, 2)
@@ -559,10 +574,10 @@ model OrderItem {
 }
 
 model Review {
-  id           BigInt   @id @default(autoincrement())
-  userId       BigInt   @map("user_id")
-  listingId    BigInt?  @map("listing_id")
-  productId    BigInt?  @map("product_id")
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  listingId    String?  @map("listing_id")
+  productId    String?  @map("product_id")
   rating       Int
   title        String?  @db.VarChar(255)
   content      String?  @db.Text
@@ -584,8 +599,8 @@ model Review {
 }
 
 model SearchHistory {
-  id           BigInt   @id @default(autoincrement())
-  userId       BigInt?  @map("user_id")
+  id           String   @id @default(cuid())
+  userId       String?  @map("user_id")
   searchQuery  String   @map("search_query") @db.VarChar(500)
   filters      Json?
   resultsCount Int?     @map("results_count")
@@ -600,8 +615,8 @@ model SearchHistory {
 }
 
 model Notification {
-  id        BigInt   @id @default(autoincrement())
-  userId    BigInt   @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
   type      String   @db.VarChar(50)
   title     String   @db.VarChar(255)
   message   String   @db.Text
@@ -619,7 +634,7 @@ model Notification {
 }
 
 model PricingPlan {
-  id            BigInt        @id @default(autoincrement())
+  id            String        @id @default(cuid())
   name          String        @db.VarChar(100)
   description   String?       @db.Text
   price         Decimal       @db.Decimal(10, 2)
@@ -638,9 +653,9 @@ model PricingPlan {
 }
 
 model UserSubscription {
-  id        BigInt             @id @default(autoincrement())
-  userId    BigInt             @map("user_id")
-  planId    BigInt             @map("plan_id")
+  id        String             @id @default(cuid())
+  userId    String             @map("user_id")
+  planId    String             @map("plan_id")
   status    SubscriptionStatus @default(ACTIVE)
   startDate DateTime           @map("start_date")
   endDate   DateTime           @map("end_date")
@@ -658,13 +673,13 @@ model UserSubscription {
 }
 
 model ContactForm {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @db.VarChar(100)
   email     String   @db.VarChar(255)
   phone     String?  @db.VarChar(20)
   subject   String?  @db.VarChar(255)
   message   String   @db.Text
-  listingId BigInt?  @map("listing_id")
+  listingId String?  @map("listing_id")
   isRead    Boolean  @default(false) @map("is_read")
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -678,8 +693,8 @@ model ContactForm {
 }
 
 model LoanCalculation {
-  id             BigInt   @id @default(autoincrement())
-  userId         BigInt?  @map("user_id")
+  id             String   @id @default(cuid())
+  userId         String?  @map("user_id")
   vehiclePrice   Decimal  @map("vehicle_price") @db.Decimal(12, 2)
   downPayment    Decimal  @map("down_payment") @db.Decimal(12, 2)
   interestRate   Decimal  @map("interest_rate") @db.Decimal(5, 2)
@@ -697,7 +712,7 @@ model LoanCalculation {
 }
 
 model SystemSetting {
-  id           BigInt      @id @default(autoincrement())
+  id           String      @id @default(cuid())
   settingKey   String      @unique @map("setting_key") @db.VarChar(100)
   settingValue String?     @map("setting_value") @db.Text
   settingType  SettingType @default(STRING) @map("setting_type")
@@ -712,11 +727,11 @@ model SystemSetting {
 }
 
 model AccessoryCategory {
-  id          BigInt   @id @default(autoincrement())
+  id          String   @id @default(cuid())
   name        String   @unique @db.VarChar(100)
   slug        String   @unique @db.VarChar(100)
   description String?  @db.Text
-  parentId    BigInt?  @map("parent_id")
+  parentId    String?  @map("parent_id")
   icon        String?  @db.VarChar(100)
   isActive    Boolean  @default(true) @map("is_active")
   sortOrder   Int      @default(0) @map("sort_order")
@@ -733,7 +748,7 @@ model AccessoryCategory {
 }
 
 model AccessoryBrand {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @unique @db.VarChar(100)
   logo      String?  @db.VarChar(500)
   website   String?  @db.VarChar(255)
@@ -748,12 +763,12 @@ model AccessoryBrand {
 }
 
 model Accessory {
-  id                 BigInt        @id @default(autoincrement())
-  userId             BigInt        @map("user_id")
+  id                 String        @id @default(cuid())
+  userId             String        @map("user_id")
   title              String        @db.VarChar(255)
   description        String?       @db.Text
-  categoryId         BigInt        @map("category_id")
-  brandId            BigInt?       @map("brand_id")
+  categoryId         String        @map("category_id")
+  brandId            String?       @map("brand_id")
   sku                String?       @unique @db.VarChar(100)
   price              Decimal       @db.Decimal(10, 2)
   salePrice          Decimal?      @map("sale_price") @db.Decimal(10, 2)
@@ -797,10 +812,10 @@ model Accessory {
 }
 
 model AccessoryCompatibility {
-  id          BigInt   @id @default(autoincrement())
-  accessoryId BigInt   @map("accessory_id")
-  makeId      BigInt?  @map("make_id")
-  modelId     BigInt?  @map("model_id")
+  id          String   @id @default(cuid())
+  accessoryId String   @map("accessory_id")
+  makeId      String?  @map("make_id")
+  modelId     String?  @map("model_id")
   yearStart   Int?     @map("year_start")
   yearEnd     Int?     @map("year_end")
   notes       String?  @db.Text
@@ -816,8 +831,8 @@ model AccessoryCompatibility {
 }
 
 model AccessorySpecification {
-  id          BigInt   @id @default(autoincrement())
-  accessoryId BigInt   @map("accessory_id")
+  id          String   @id @default(cuid())
+  accessoryId String   @map("accessory_id")
   specName    String   @map("spec_name") @db.VarChar(100)
   specValue   String   @map("spec_value") @db.VarChar(255)
   specUnit    String?  @map("spec_unit") @db.VarChar(20)
