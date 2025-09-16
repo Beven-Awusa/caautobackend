@@ -1,33 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotificationsRepository } from './notifications.repository';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { NotificationQueryDto } from './dto/notification-query.dto';
 import {
-  NotificationPublic,
-  NotificationCreateInput,
-} from './notification.schema';
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { NotificationsRepository } from './notifications.repository';
+import { NotificationQueryDto } from './dto/notification-query.dto';
+import { NotificationPublic } from './notification.schema';
 import { PaginationResult } from 'src/common/interface';
+import { EmailService } from '../email/email.service';
+import { UserRepository } from '../users/user.repository';
 
 @Injectable()
 export class NotificationsService {
-  constructor(private notificationsRepository: NotificationsRepository) {}
-
-  async createNotification(
-    createNotificationDto: CreateNotificationDto,
-  ): Promise<NotificationPublic> {
-    const notificationData: NotificationCreateInput = {
-      type: createNotificationDto.type,
-      title: createNotificationDto.title,
-      message: createNotificationDto.message,
-      data: createNotificationDto.data,
-      user: {
-        connect: { id: createNotificationDto.userId },
-      },
-    };
-
-    return this.notificationsRepository.create(notificationData);
-  }
+  constructor(
+    private notificationsRepository: NotificationsRepository,
+    private readonly emailService: EmailService,
+    private readonly usersRepository: UserRepository,
+  ) {}
 
   async findAllNotifications(
     query: NotificationQueryDto,
@@ -67,32 +56,6 @@ export class NotificationsService {
     );
   }
 
-  async updateNotification(
-    id: string,
-    updateNotificationDto: UpdateNotificationDto,
-  ): Promise<NotificationPublic> {
-    const existingNotification = await this.notificationsRepository.find(id);
-    if (!existingNotification) {
-      throw new NotFoundException(`Notification with ID ${id} not found`);
-    }
-
-    const updateData: Partial<NotificationCreateInput> = {
-      type: updateNotificationDto.type,
-      title: updateNotificationDto.title,
-      message: updateNotificationDto.message,
-      data: updateNotificationDto.data,
-    };
-
-    // Remove undefined values
-    Object.keys(updateData).forEach((key) => {
-      if (updateData[key] === undefined) {
-        delete updateData[key];
-      }
-    });
-
-    return this.notificationsRepository.update(id, updateData);
-  }
-
   async deleteNotification(id: string): Promise<NotificationPublic> {
     const existingNotification = await this.notificationsRepository.find(id);
     if (!existingNotification) {
@@ -111,11 +74,61 @@ export class NotificationsService {
     return this.notificationsRepository.markAsRead(id);
   }
 
-  async markAllAsRead(userId: string): Promise<NotificationPublic[]> {
-    return this.notificationsRepository.markAllAsRead(userId);
+  async markAllAsRead(userId: string) {
+    try {
+      const user = await this.usersRepository.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+      const notifications =
+        await this.notificationsRepository.markAllAsRead(userId);
+
+      return notifications;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getUnreadCount(userId: string): Promise<number> {
-    return this.notificationsRepository.getUnreadCount(userId);
+    try {
+      return this.notificationsRepository.getUnreadCount(userId);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async testEmail(email: string) {
+    try {
+      console.log(email);
+
+      const message = await this.emailService.sendWelcomeEmail(
+        email,
+        'Test Email User',
+      );
+
+      return message;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async testToken(email: string) {
+    try {
+      // const user = await this.usersRepository.findUserByEmail(email);
+      // if (!user) throw new NotFoundException('User not found');
+
+      const token = '123456'; // For testing purposes
+
+      await this.emailService.sendOtpEmail(
+        email,
+        'Test Token',
+        token,
+        'This is a test OTP email.',
+      );
+
+      return { message: 'Test OTP email sent successfully' };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

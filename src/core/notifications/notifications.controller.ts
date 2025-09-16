@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  Post,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +22,7 @@ import {
   PaginatedNotificationResponseDto,
   UnreadCountResponseDto,
 } from './dto/notification-response.dto';
+import { ResendOtpDto } from '../auth/dto/resend-token.dto';
 
 @ApiTags('Notifications')
 @Controller('notifications')
@@ -188,5 +190,25 @@ export class NotificationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.notificationsService.deleteNotification(id);
+  }
+
+  @ApiOperation({ summary: 'Test email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Email sent successfully',
+  })
+  @Post('test-email')
+  async testEmail(@Body() dto: ResendOtpDto) {
+    await this.notificationsService.testEmail(dto.email);
+  }
+
+  @ApiOperation({ summary: 'Test token generation' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token generated successfully',
+  })
+  @Post('test-token')
+  async testToken(@Body() dto: ResendOtpDto) {
+    return this.notificationsService.testToken(dto.email);
   }
 }

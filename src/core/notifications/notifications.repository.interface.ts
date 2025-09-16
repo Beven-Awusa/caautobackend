@@ -17,7 +17,7 @@ export interface NotificationsRepositoryInterface {
   delete(id: string): Promise<NotificationPublic>;
   markAsRead(id: string): Promise<NotificationPublic>;
 
-  markAllAsRead(userId: string): Promise<NotificationPublic[]>;
+  markAllAsRead(userId: string);
   getUnreadCount(userId: string): Promise<number>;
   getNotificationPublicsForUser(
     userId: string,

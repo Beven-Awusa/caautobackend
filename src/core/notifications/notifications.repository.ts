@@ -122,7 +122,7 @@ export class NotificationsRepository
     return notification;
   }
 
-  async markAllAsRead(userId: string): Promise<any> {
+  async markAllAsRead(userId: string) {
     const notifications = await this.database.notification.updateMany({
       where: { userId, isRead: false },
       data: { isRead: true },

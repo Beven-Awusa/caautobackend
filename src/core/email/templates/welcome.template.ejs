@@ -91,7 +91,7 @@
         </div>
         
         <div class="content">
-            <p class="greeting">Dear <%= customerName || email %>,</p>
+            <p class="greeting">Dear <%= (typeof customerName !== 'undefined' && customerName) ? customerName : (typeof email !== 'undefined' ? email : 'Valued Customer') %>,</p>
             
             <div class="welcome-message">
                 🚗 Welcome to CAAUTO - Your Trusted Auto Parts Marketplace!
@@ -112,7 +112,7 @@
             
             <p>Ready to find the perfect parts for your vehicle?</p>
             <center>
-                <a href="<%= websiteUrl || 'https://caauto.com' %>" class="button">Start Shopping Now</a>
+                <a href="<%= (typeof websiteUrl !== 'undefined' && websiteUrl) ? websiteUrl : 'https://caauto.com' %>" class="button">Start Shopping Now</a>
             </center>
         </div>
         
@@ -123,7 +123,7 @@
             
             <div class="support-info">
                 <p>Need assistance? Our support team is here to help:</p>
-                <p><a href="mailto:<%= supportEmail || 'support@caauto.com' %>"><%= supportEmail || 'support@caauto.com' %></a></p>
+                <p><a href="mailto:<%= (typeof supportEmail !== 'undefined' && supportEmail) ? supportEmail : 'support@caauto.com' %>"><%= (typeof supportEmail !== 'undefined' && supportEmail) ? supportEmail : 'support@caauto.com' %></a></p>
                 <% if (typeof supportPhone !== 'undefined' && supportPhone) { %>
                     <p>Phone: <%= supportPhone %></p>
                 <% } %>

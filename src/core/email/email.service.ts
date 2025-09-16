@@ -12,6 +12,9 @@ export class EmailService {
       context: {
         customerName,
         email,
+        websiteUrl: 'https://caauto.com',
+        supportEmail: 'support@caauto.com',
+        supportPhone: '+1234567890',
       },
     });
   }
@@ -31,6 +34,9 @@ export class EmailService {
         email,
         otp,
         description,
+        websiteUrl: 'https://caauto.com',
+        supportEmail: 'support@caauto.com',
+        supportPhone: '+1234567890',
       },
     });
   }

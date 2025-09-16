@@ -12,7 +12,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
       useFactory: (config: ConfigService) => ({
         transport: {
           host: config.get('SMTP_HOST'),
-          port: config.get('SMTP_HOST'),
+          port: config.get('SMTP_PORT'),
           secure: false,
           auth: {
             user: config.get('SMTP_USER'),
@@ -20,14 +20,14 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
           },
         },
         defaults: {
-          from: '"Your App Name" <no-reply@example.com>',
+          from: '"CAAUTO" <no-reply@caauto.com>',
         },
         template: {
           dir: __dirname + '/templates/',
           adapter: new EjsAdapter(),
-          options: {
-            strict: true,
-          },
+          // options: {
+          //   strict: true,
+          // },
         },
       }),
       inject: [ConfigService],
