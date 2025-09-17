@@ -10,6 +10,7 @@ import { CarListingQueryParams } from './dto/query-param.dto';
 import { FileService } from '../core/files/files.service';
 import { UserRepository } from '../core/users/user.repository';
 import { UploadMediaDto } from './dto/uplaod-media.dto';
+import { CarsFeatureRepository } from '../filters/repositories';
 
 @Injectable()
 export class ListingsService {
@@ -17,6 +18,7 @@ export class ListingsService {
     private listingsRepository: ListingsRepository,
     private fileService: FileService,
     private readonly usersRepository: UserRepository,
+    private carsFeatureRepository: CarsFeatureRepository,
   ) {}
   async create(
     createListingDto: CreateListingDto,
@@ -25,8 +27,16 @@ export class ListingsService {
     userId: string,
   ) {
     try {
+      const featuresIds = createListingDto.feature_ids;
       const user = await this.usersRepository.findUserById(userId);
       if (!user) throw new NotFoundException(`User with ${userId} not found`);
+
+      const features =
+        await this.carsFeatureRepository.findManyFeatures(featuresIds);
+
+      if (features.length !== createListingDto.feature_ids.length) {
+        throw new NotFoundException(`Invalid feature IDs`);
+      }
       if (primaryImage) {
         const uploadedPrimaryImage =
           await this.fileService.uploadFile(primaryImage);
@@ -62,6 +72,9 @@ export class ListingsService {
         user: { connect: { id: userId } },
         year: createListingDto.year,
         videos: createListingDto.videos,
+        features: {
+          connect: features.map((feature) => ({ id: feature.id })),
+        },
         vin: createListingDto.vin,
       });
     } catch (error) {
@@ -71,7 +84,6 @@ export class ListingsService {
 
   async findAll(params: CarListingQueryParams) {
     try {
-      console.log(params);
       const listings = await this.listingsRepository.findAll(params);
       return listings;
     } catch (error) {
@@ -114,6 +126,15 @@ export class ListingsService {
         cylinders: updateListingDto.cylinders,
       });
       return updatedListing;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async search(query: string, limit: number, page: number) {
+    try {
+      const listings = await this.listingsRepository.search(query, limit, page);
+      return listings;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

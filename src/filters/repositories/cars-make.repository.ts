@@ -5,9 +5,9 @@ import {
   CarsMakeUpdateInput,
 } from '../schemas/cars-make.schema';
 import { CarsMakeRepositoryInterface } from '../interfaces/cars-make.repository.interface';
-import { DatabaseService } from 'src/core/database/database.service';
+import { DatabaseService } from '../../core/database/database.service';
 import { CarsMakeSelect } from '../schemas/cars-make.schema';
-import { PaginationOptions, PaginationResult } from 'src/common/interface';
+import { PaginationOptions, PaginationResult } from '../../common/interface';
 
 @Injectable()
 export class CarsMakeRepository implements CarsMakeRepositoryInterface {

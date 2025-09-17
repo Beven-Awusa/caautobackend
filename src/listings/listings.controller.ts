@@ -23,6 +23,7 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -72,6 +73,23 @@ export class ListingsController {
   @HttpCode(HttpStatus.OK)
   findAll(@Query() query: CarListingQueryParams) {
     return this.listingsService.findAll(query);
+  }
+  @Get('search')
+  @ApiOperation({ summary: 'Search car listings' })
+  @ApiResponse({
+    status: 200,
+    description: 'Car listings retrieved successfully',
+  })
+  @ApiQuery({ name: 'query', description: 'Search query', required: true })
+  @ApiQuery({ name: 'page', description: 'Page number', required: false })
+  @ApiQuery({ name: 'limit', description: 'Items per page', required: false })
+  @HttpCode(HttpStatus.OK)
+  search(
+    @Query('query') query: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.listingsService.search(query, limit, page);
   }
 
   @ApiOperation({ summary: 'Get car listing by ID' })

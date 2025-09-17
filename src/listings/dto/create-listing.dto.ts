@@ -221,6 +221,5 @@ export class CreateListingDto {
 
   @ApiProperty({ type: [String], description: 'Feature IDs', required: false })
   @IsArray()
-  @IsOptional()
-  feature_ids?: string[];
+  feature_ids: string[];
 }

@@ -13,4 +13,8 @@ export interface ListingsRepositoryInterface {
   findAll(options?: CarListingParams): Promise<PaginationResult<Listings>>;
   update(id: string, data: Partial<ListingsUpdateInput>): Promise<Listings>;
   delete(id: string): Promise<Listings>;
+
+  // findManyFeatures(ids: string[]): Promise<[]>;
+
+  search(query: string, limit: number, page: number): Promise<Listings[]>;
 }

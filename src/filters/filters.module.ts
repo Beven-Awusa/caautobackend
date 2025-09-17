@@ -26,5 +26,13 @@ import {
     CarsModelRepository,
     CarsFeatureRepository,
   ],
+  exports: [
+    CarsMakeService,
+    CarsModelService,
+    CarsFeatureService,
+    CarsMakeRepository,
+    CarsModelRepository,
+    CarsFeatureRepository,
+  ],
 })
 export class FiltersModule {}

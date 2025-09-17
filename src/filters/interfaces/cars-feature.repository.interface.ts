@@ -13,4 +13,5 @@ export interface CarsFeatureRepositoryInterface
   > {
   findByName(name: string): Promise<CarsFeature | null>;
   findMany(): Promise<CarsFeature[]>;
+  findManyFeatures(ids: string[]): Promise<CarsFeature[]>;
 }

@@ -5,9 +5,9 @@ import {
   CarsModelUpdateInput,
 } from '../schemas/cars-model.schema';
 import { CarsModelRepositoryInterface } from '../interfaces/cars-model.repository.interface';
-import { DatabaseService } from 'src/core/database/database.service';
+import { DatabaseService } from '../../core/database/database.service';
 import { CarsModelSelect } from '../schemas/cars-model.schema';
-import { PaginationOptions, PaginationResult } from 'src/common/interface';
+import { PaginationOptions, PaginationResult } from '../../common/interface';
 
 @Injectable()
 export class CarsModelRepository implements CarsModelRepositoryInterface {

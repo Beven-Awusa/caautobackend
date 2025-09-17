@@ -15,6 +15,29 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class ListingsRepository implements ListingsRepositoryInterface {
   constructor(private database: DatabaseService) {}
+  async search(
+    query: string,
+    limit: number = 10,
+    page: number = 1,
+  ): Promise<Listings[]> {
+    return this.database.carListing.findMany({
+      where: {
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+          { make: { name: { contains: query, mode: 'insensitive' } } },
+          { model: { name: { contains: query, mode: 'insensitive' } } },
+          { location: { contains: query, mode: 'insensitive' } },
+          { vin: { contains: query, mode: 'insensitive' } },
+          { color: { contains: query, mode: 'insensitive' } },
+          { interiorColor: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+      select: ListingsSelect,
+    });
+  }
   delete(id: string): Promise<Listings> {
     return this.database.carListing.delete({
       where: { id },

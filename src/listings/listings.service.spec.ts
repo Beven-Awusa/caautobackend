@@ -5,6 +5,7 @@ import { FileService } from '../core/files/files.service';
 import { UserRepository } from '../core/users/user.repository';
 import { DatabaseService } from '../core/database/database.service';
 import { ConfigService } from '@nestjs/config';
+import { CarsFeatureRepository } from '../filters/repositories';
 import {
   CarCondition,
   DriveType,
@@ -45,6 +46,7 @@ const createListingDto = {
   gallery_images: ['test1.jpg', 'test2.jpg'],
   videos: ['test.mp4'],
   vin: '12345678901234567',
+  feature_ids: [],
 };
 const primaryImage: Express.Multer.File = {
   originalname: 'test.jpg',
@@ -102,6 +104,7 @@ describe('ListingsService', () => {
         DatabaseService,
         FileService,
         UserRepository,
+        CarsFeatureRepository,
       ],
     }).compile();
 
