@@ -19,6 +19,7 @@ import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { CarListingQueryParams } from './dto/query-param.dto';
 import {
+  ApiBearerAuth,
   ApiConsumes,
   ApiOperation,
   ApiParam,
@@ -30,6 +31,7 @@ import { UserId } from '../common/decorator';
 import { UploadMediaDto } from './dto/uplaod-media.dto';
 
 @UseGuards(JWTGuard)
+@ApiBearerAuth()
 @Controller('listings')
 export class ListingsController {
   constructor(private readonly listingsService: ListingsService) {}

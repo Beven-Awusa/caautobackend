@@ -71,6 +71,7 @@ export class ListingsService {
 
   async findAll(params: CarListingQueryParams) {
     try {
+      console.log(params);
       const listings = await this.listingsRepository.findAll(params);
       return listings;
     } catch (error) {
@@ -82,6 +83,7 @@ export class ListingsService {
     try {
       const listing = await this.listingsRepository.find(id);
       if (!listing) throw new NotFoundException(`Listing with ${id} not found`);
+      return listing;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

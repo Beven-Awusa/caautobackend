@@ -108,7 +108,7 @@ export class FileService {
   async deleteFile(filename: string): Promise<void> {
     if (!filename) throw new BadRequestException('Filename is required');
 
-    const filePath = path.join(this.uploadDir, filename);
+    const filePath = path.join(filename);
 
     try {
       await fs.access(filePath);

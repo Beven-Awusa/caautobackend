@@ -12,7 +12,7 @@ import { join } from 'path';
         {
           rootPath: join(
             process.cwd(),
-            `${configService.get('UPLOAD_DIR')}` || './uploads',
+            `${configService.get('UPLOAD_DIR')}` || '/uploads',
           ),
           serveRoot: '/uploads',
         },

@@ -1,4 +1,9 @@
-import { CarCondition, FuelType, TransmissionType } from '@prisma/client';
+import {
+  CarCondition,
+  FuelType,
+  ListingStatus,
+  TransmissionType,
+} from '@prisma/client';
 
 export interface CarListingParams {
   page?: number;
@@ -15,6 +20,6 @@ export interface CarListingParams {
   fuel_type?: FuelType;
   transmission?: TransmissionType;
   featured?: boolean;
-  status?: 'active' | 'pending' | 'sold' | 'draft';
+  status?: ListingStatus;
   search?: string;
 }

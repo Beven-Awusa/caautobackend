@@ -1,4 +1,9 @@
-import { CarCondition, FuelType, TransmissionType } from '@prisma/client';
+import {
+  CarCondition,
+  FuelType,
+  ListingStatus,
+  TransmissionType,
+} from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsOptional,
@@ -134,13 +139,14 @@ export class CarListingQueryParams {
   featured?: boolean;
 
   @ApiProperty({
-    example: 'active',
+    example: 'ACTIVE',
     description: 'Filter by listing status',
+    enum: ListingStatus,
     required: false,
   })
-  @IsString()
   @IsOptional()
-  status?: 'active' | 'pending' | 'sold' | 'draft';
+  @IsEnum(ListingStatus)
+  status?: ListingStatus;
 
   @ApiProperty({
     example: 'Toyota Camry',

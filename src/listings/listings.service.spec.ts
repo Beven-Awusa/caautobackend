@@ -13,11 +13,16 @@ import {
   TransmissionType,
 } from '@prisma/client';
 import { Readable } from 'stream';
+
+const userId = 'cmflbbumz0000uve7cplt5842';
+const makeId = 'cmfntfcaf000006firmcl7bm9';
+const modelId = 'cmfntgy7b000106fidls21y5z';
+const listingId = 'cmfnu808t000406ficeulij7z';
 const createListingDto = {
   title: 'Test Listing',
   description: 'Test Description',
-  make_id: '1',
-  model_id: '1',
+  make_id: makeId,
+  model_id: modelId,
   year: 2020,
   condition: CarCondition.NEW,
   price: 10000,
@@ -39,7 +44,7 @@ const createListingDto = {
   primary_image: 'test.jpg',
   gallery_images: ['test1.jpg', 'test2.jpg'],
   videos: ['test.mp4'],
-  vin: '1234567890',
+  vin: '12345678901234567',
 };
 const primaryImage: Express.Multer.File = {
   originalname: 'test.jpg',
@@ -108,7 +113,6 @@ describe('ListingsService', () => {
   });
 
   it('should create a listing', async () => {
-    const userId = '1';
     const result = await service.create(
       createListingDto,
       primaryImage,
@@ -127,24 +131,20 @@ describe('ListingsService', () => {
   });
 
   it('should find one listing', async () => {
-    const result = await service.findOne('1');
+    const result = await service.findOne(listingId);
     expect(result).toBeDefined();
   });
 
   it('should update a listing', async () => {
-    const userId = '1';
-    const result = await service.update('1', createListingDto, userId);
-    expect(result).toBeDefined();
-  });
-
-  it('should remove a listing', async () => {
-    const userId = '1';
-    const result = await service.remove('1', userId);
+    const result = await service.update(listingId, createListingDto, userId);
     expect(result).toBeDefined();
   });
   it('should add media to a listing', async () => {
-    const userId = '1';
-    const result = await service.addMedia('1', uploadMediaDto, userId);
+    const result = await service.addMedia(listingId, uploadMediaDto, userId);
+    expect(result).toBeDefined();
+  });
+  it('should remove a listing', async () => {
+    const result = await service.remove(listingId, userId);
     expect(result).toBeDefined();
   });
 });
