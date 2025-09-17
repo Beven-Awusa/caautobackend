@@ -75,16 +75,18 @@ export class UserRepository implements UserRepositoryInterface {
 
     return {
       items: users,
-      total,
-      page,
-      limit,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
     };
   }
 
-  async update(id: string, data: Partial<User>): Promise<User> {
+  async update(id: string, data: Partial<UserCreateInput>): Promise<User> {
     return this.database.user.update({
       where: { id },
       data,

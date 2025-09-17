@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './email/email.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { EmailModule } from './email/email.module';
     NotificationsModule,
     DatabaseModule,
     EmailModule,
+    FilesModule,
   ],
 })
 export class CoreModule {}

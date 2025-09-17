@@ -1,7 +1,8 @@
 import { BaseRepository } from 'src/common/interface';
 import { Token, User, UserCreateInput } from './users.schema';
 
-export interface UserRepositoryInterface extends BaseRepository<User, string> {
+export interface UserRepositoryInterface
+  extends BaseRepository<User, UserCreateInput, UserCreateInput> {
   findUserById(id: string): Promise<User | null>;
   findUserByPhone(phone: string): Promise<User | null>;
   findUserByGoogleId(googleId: string): Promise<User | null>;
