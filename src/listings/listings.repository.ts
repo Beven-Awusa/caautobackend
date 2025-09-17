@@ -5,10 +5,10 @@ import {
   ListingsUpdateInput,
 } from './listings.schema';
 import { CarListingParams } from './interface/params.interface';
-import { PaginationResult } from 'src/common/interface';
+import { PaginationResult } from '../.../../common/interface';
 import { ListingsRepositoryInterface } from './interface/listings.repository.interface';
 import { ListingsSelect } from './listings.schema';
-import { DatabaseService } from 'src/core/database/database.service';
+import { DatabaseService } from '../core/database/database.service';
 
 import { Prisma } from '@prisma/client';
 

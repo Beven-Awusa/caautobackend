@@ -7,8 +7,8 @@ import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { ListingsRepository } from './listings.repository';
 import { CarListingQueryParams } from './dto/query-param.dto';
-import { FileService } from 'src/core/files/files.service';
-import { UserRepository } from 'src/core/users/user.repository';
+import { FileService } from '../core/files/files.service';
+import { UserRepository } from '../core/users/user.repository';
 import { UploadMediaDto } from './dto/uplaod-media.dto';
 
 @Injectable()

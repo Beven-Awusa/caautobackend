@@ -25,8 +25,8 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { JWTGuard } from 'src/common/guards';
-import { UserId } from 'src/common/decorator';
+import { JWTGuard } from '../common/guards';
+import { UserId } from '../common/decorator';
 import { UploadMediaDto } from './dto/uplaod-media.dto';
 
 @UseGuards(JWTGuard)

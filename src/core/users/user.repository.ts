@@ -4,9 +4,9 @@ import { Token, User, UserCreateInput } from './users.schema';
 import {
   PaginationOptions,
   PaginationResult,
-} from 'src/common/interface/pagination.interface';
+} from '../../common/interface/pagination.interface';
 import { UserRepositoryInterface } from './user.repository.interface';
-import { generateOTP } from 'src/common/utils';
+import { generateOTP } from '../../common/utils';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
