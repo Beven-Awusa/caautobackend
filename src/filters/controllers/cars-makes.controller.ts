@@ -9,6 +9,7 @@ import {
   Query,
   HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateCarsMakeDto } from '../dto/cars-make.dto';
 import { UpdateCarsMakeDto } from '../dto/cars-make.dto';
@@ -18,11 +19,15 @@ import {
   ApiResponse,
   ApiQuery,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CarsMakeService } from '../services';
+import { JWTGuard } from 'src/common/guards';
 
 @ApiTags('Filters')
 @Controller('filters/makes')
+@ApiBearerAuth()
+@UseGuards(JWTGuard)
 export class CarsMakeController {
   constructor(private readonly carsMakeService: CarsMakeService) {}
 

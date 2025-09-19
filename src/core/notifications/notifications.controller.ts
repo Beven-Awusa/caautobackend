@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +14,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { NotificationQueryDto } from './dto/notification-query.dto';
@@ -21,9 +23,12 @@ import {
   PaginatedNotificationResponseDto,
   UnreadCountResponseDto,
 } from './dto/notification-response.dto';
+import { JWTGuard } from 'src/common/guards';
 
 @ApiTags('Notifications')
 @Controller('notifications')
+@ApiBearerAuth()
+@UseGuards(JWTGuard)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
