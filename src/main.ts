@@ -18,8 +18,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.setGlobalPrefix('api/caauto');
   const config = new DocumentBuilder()

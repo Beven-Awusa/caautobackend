@@ -9,6 +9,7 @@ import {
   Query,
   HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,6 +17,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,9 +27,13 @@ import {
   UserResponseDto,
   PaginatedUserResponseDto,
 } from './dto/user-response.dto';
+import { JWTGuard } from 'src/common/guards';
+import { Role } from 'src/common/decorator';
 
 @ApiTags('Users')
 @Controller('users')
+@UseGuards(JWTGuard)
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -46,6 +52,7 @@ export class UsersController {
     description: 'Conflict - User already exists',
   })
   @HttpCode(HttpStatus.CREATED)
+  @Role(['ADMIN'])
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.createUser(createUserDto);
@@ -57,48 +64,6 @@ export class UsersController {
     status: 200,
     description: 'Users retrieved successfully',
     type: PaginatedUserResponseDto,
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    description: 'Page number',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Items per page',
-  })
-  @ApiQuery({
-    name: 'sort',
-    required: false,
-    type: String,
-    description: 'Sort field',
-  })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    type: String,
-    description: 'Sort order (asc/desc)',
-  })
-  @ApiQuery({
-    name: 'role',
-    required: false,
-    enum: ['BUYER', 'SELLER', 'ADMIN'],
-    description: 'Filter by role',
-  })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
-    description: 'Filter by status',
-  })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    type: String,
-    description: 'Search by name or email',
   })
   @Get()
   async findAll(@Query() query: UserQueryDto) {
@@ -156,6 +121,7 @@ export class UsersController {
   })
   @ApiParam({ name: 'id', description: 'User ID' })
   @Delete(':id')
+  @Role(['ADMIN'])
   async remove(@Param('id') id: string) {
     const user = await this.usersService.deleteUser(id);
     return user;
@@ -173,6 +139,7 @@ export class UsersController {
   })
   @ApiQuery({ name: 'email', description: 'User email' })
   @Get('email/search')
+  @Role(['ADMIN'])
   async findByEmail(@Query('email') email: string) {
     const user = await this.usersService.findUserByEmail(email);
     return user;
