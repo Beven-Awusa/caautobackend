@@ -13,6 +13,13 @@ export class CarsFeatureService {
 
   async create(createCarsFeatureDto: CreateCarsFeatureDto) {
     try {
+      const feature = await this.carsFeatureRepository.findByName(
+        createCarsFeatureDto.name,
+      );
+      if (feature)
+        throw new NotFoundException(
+          `Car feature with ${createCarsFeatureDto.name} already exists`,
+        );
       return await this.carsFeatureRepository.create({
         name: createCarsFeatureDto.name,
         category: createCarsFeatureDto.category,
